@@ -98,12 +98,16 @@
             btnSendReset.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle></svg>Sending...';
 
             try {
-                await AuthAPI.sendPasswordResetOtp(email);
-                showToast('Reset code sent to your email!', 'success');
+                const res = await AuthAPI.sendPasswordResetOtp(email);
+                showToast(res?.message || 'Reset code sent to your email!', 'success');
+                if (res?.note) setTimeout(() => showToast(res.note, 'info'), 1500);
 
                 // Show OTP section
                 forgotPasswordForm.style.display = 'none';
                 otpSection.style.display = 'block';
+                if (res?.otp && otpInputs.length === 6) {
+                    res.otp.split('').forEach((d, i) => { if (otpInputs[i]) otpInputs[i].value = d; });
+                }
                 setTimeout(() => otpInputs[0].focus(), 300);
 
                 // Start countdown

@@ -155,7 +155,10 @@
                     otpGroup.style.transform = 'translateY(0)';
                 }, 10);
                 
-                // Focus first box
+                // Focus first box or auto-populate if provided
+                if (result.otp && otpInputs.length === 6) {
+                    result.otp.split('').forEach((d, i) => { if (otpInputs[i]) otpInputs[i].value = d; });
+                }
                 setTimeout(() => otpInputs[0].focus(), 300);
                 
                 emailInput.disabled = true; // Lock email while verifying

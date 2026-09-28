@@ -58,6 +58,9 @@ class Config:
         'http://127.0.0.1:5500',
         'https://teamup-sports.netlify.app',
         'https://teamup-sports.netlify.app/',
+        'https://teamup-omega.vercel.app',
+        'https://teamup-omega.vercel.app/',
+        r'^https:\/\/.*\.vercel\.app$',
         *([_frontend_url] if _frontend_url else [])
     ]
     # If no specific frontend URL and no specific origins, fallback to * is risky with credentials
