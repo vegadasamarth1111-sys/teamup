@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://teamup-sports-backend.onrender.com/api/$1" },
-    { "source": "/", "destination": "/teamup-sports-main/index.html" },
-    { "source": "/(.*)", "destination": "/teamup-sports-main/$1" }
-  ]
+  "outputDirectory": "teamup-sports-main",
+  "cleanUrls": true
 }
