@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://teamup-sports-backend.onrender.com/api/$1" }
+  ]
+}
