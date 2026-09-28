@@ -109,7 +109,10 @@ def create_app(config_name='default'):
         from models.match import Match
         from models.request import JoinRequest, MatchHistory
         from models.livestream import LiveStream
-        db.create_all()
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.warning(f"Could not create tables on startup (DB may be temporarily unavailable): {e}")
     
     return app
 
