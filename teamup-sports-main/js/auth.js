@@ -326,12 +326,31 @@
         });
     }
 
+    const FALLBACK_STATES_INDIA = [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
+        "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", 
+        "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+        "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+        "Chandigarh", "Delhi", "Jammu and Kashmir", "Puducherry"
+    ];
+
     async function loadStates(country) {
         const stateSelect = document.getElementById('state');
         const citySelect = document.getElementById('city');
+        let states = [];
         try {
             const result = await LocationsAPI.getStates(country);
-            const states = result.states || [];
+            states = (result && result.states && result.states.length) ? result.states : [];
+        } catch (err) {
+            console.warn('Failed to load states from API:', err);
+        }
+
+        if (!states.length && country === 'India') {
+            states = FALLBACK_STATES_INDIA;
+        }
+
+        if (states.length) {
             stateSelect.innerHTML = '<option value="">Select State</option>';
             states.forEach(function (s) {
                 const opt = document.createElement('option');
@@ -340,19 +359,43 @@
                 stateSelect.appendChild(opt);
             });
             stateSelect.disabled = false;
-        } catch (err) {
-            console.error('Failed to load states:', err);
-            stateSelect.innerHTML = '<option value="">Failed to load</option>';
+        } else {
+            stateSelect.innerHTML = '<option value="General">General</option>';
+            stateSelect.disabled = false;
         }
+
         citySelect.innerHTML = '<option value="">Select state first</option>';
         citySelect.disabled = true;
     }
 
+    const FALLBACK_CITIES = {
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar"],
+        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur"],
+        "Delhi": ["New Delhi", "North Delhi", "South Delhi", "West Delhi", "East Delhi"],
+        "Karnataka": ["Bangalore", "Hubli", "Mysore", "Gulbarga", "Belgaum", "Mangalore"],
+        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli"],
+        "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Meerut", "Varanasi", "Noida", "Prayagraj"],
+        "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri"],
+        "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur"],
+        "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda"],
+        "Haryana": ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar"]
+    };
+
     async function loadCities(country, state) {
         const citySelect = document.getElementById('city');
+        let cities = [];
         try {
             const result = await LocationsAPI.getCities(country, state);
-            const cities = result.cities || [];
+            cities = (result && result.cities && result.cities.length) ? result.cities : [];
+        } catch (err) {
+            console.warn('LocationsAPI slow/offline, using fallback:', err);
+        }
+
+        if (!cities.length && FALLBACK_CITIES[state]) {
+            cities = FALLBACK_CITIES[state];
+        }
+
+        if (cities.length) {
             citySelect.innerHTML = '<option value="">Select City</option>';
             cities.forEach(function (c) {
                 const opt = document.createElement('option');
@@ -361,9 +404,9 @@
                 citySelect.appendChild(opt);
             });
             citySelect.disabled = false;
-        } catch (err) {
-            console.error('Failed to load cities:', err);
-            citySelect.innerHTML = '<option value="">Failed to load</option>';
+        } else {
+            citySelect.innerHTML = '<option value="Other">Other / Main City</option>';
+            citySelect.disabled = false;
         }
     }
 
