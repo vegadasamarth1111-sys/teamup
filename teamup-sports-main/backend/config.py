@@ -9,7 +9,6 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'teamup-secret-key-change-in-production')
     
     # Database - Using PostgreSQL
-    # Fix for Supabase/Render which provide postgres:// instead of postgresql://
     _db_url = os.environ.get('DATABASE_URL') or \
         'postgresql://postgres:Rishi%402005@localhost:5432/TeamUP_Sports'
     
@@ -18,7 +17,13 @@ class Config:
         separator = '&' if '?' in _db_url else '?'
         _db_url += f'{separator}sslmode=require'
         
-    SQLALCHEMY_DATABASE_URI = _db_url.replace('postgres://', 'postgresql://', 1) if _db_url.startswith('postgres://') else _db_url
+    # Ensure driver is explicitly psycopg2 for SQLAlchemy compatibility
+    if _db_url.startswith('postgres://'):
+        _db_url = _db_url.replace('postgres://', 'postgresql+psycopg2://', 1)
+    elif _db_url.startswith('postgresql://'):
+        _db_url = _db_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
+        
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # JWT Settings
